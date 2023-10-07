@@ -1,3 +1,9 @@
 streamlit
 pandas
+plost
 bpmn_python
+
+
+conda install -c conda-forge nodejs
+npm install --save bpmn-js
+
