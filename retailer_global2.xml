@@ -13,8 +13,8 @@
     </bsim:timetable>
   </bsim:timetables>
   <bsim:resourceData>
-    <bsim:dynamicResource id="Worker" defaultQuantity="1" defaultCost="40.0" defaultTimetableId="24_7" defaultTimeUnit="HOURS" />
-    <bsim:dynamicResource id="System" defaultQuantity="1" defaultCost="50.0" defaultTimetableId="24_7" defaultTimeUnit="HOURS" />
-    <bsim:dynamicResource id="Robot" defaultQuantity="1" defaultCost="8.0" defaultTimetableId="24_7" defaultTimeUnit="HOURS" />
+    <bsim:dynamicResource id="Worker" defaultQuantity="2" defaultCost="20.0" defaultTimetableId="24_7" defaultTimeUnit="HOURS" />
+    <bsim:dynamicResource id="System" defaultQuantity="3" defaultCost="10.0" defaultTimetableId="24_7" defaultTimeUnit="HOURS" />
+    <bsim:dynamicResource id="Robot" defaultQuantity="5" defaultCost="5.0" defaultTimetableId="24_7" defaultTimeUnit="HOURS" />
   </bsim:resourceData>
 </bsim:globalConfiguration>

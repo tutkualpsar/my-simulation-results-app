@@ -13,7 +13,7 @@ def parce_resource_input(xml_file):
         resource_types = []
         quantities = []
         costs = []
-        resource_input= []
+        business_hours = []
 
         # Iterate over each dynamicResource element
         for dynamic_resource in root.findall(".//{http://bsim.hpi.uni-potsdam.de/scylla/simModel}dynamicResource"):
@@ -21,15 +21,24 @@ def parce_resource_input(xml_file):
             quantity = float(dynamic_resource.get("defaultQuantity"))
             cost = float(dynamic_resource.get("defaultCost"))
 
+            # Calculate business hours in seconds
+            business_hours_in_seconds = sum(
+                (int(item.get("endTime").split(":")[0]) * 3600 + int(item.get("endTime").split(":")[1]) * 60) -
+                (int(item.get("beginTime").split(":")[0]) * 3600 + int(item.get("beginTime").split(":")[1]) * 60)
+                for item in dynamic_resource.findall(".//{http://bsim.hpi.uni-potsdam.de/scylla/simModel}timetableItem")
+            )
+
             resource_types.append(resource_type)
             quantities.append(quantity)
             costs.append(cost)
+            business_hours.append(business_hours_in_seconds)
 
         # Create the DataFrame
         resource_input = pd.DataFrame({
             'Resource Type': resource_types,
             'Quantity': quantities,
-            'Cost': costs
+            'Cost per Hour': costs
         })
 
         return resource_input
+

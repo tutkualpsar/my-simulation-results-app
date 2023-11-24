@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bsim:definitions xmlns:bsim="http://bsim.hpi.uni-potsdam.de/scylla/simModel" targetNamespace="http://www.hpi.de">
-  <bsim:simulationConfiguration id="retailerProcess_sim" processRef="sid-84e84226-d31d-4a97-a17b-c02ece90946f" processInstances="15000" startDateTime="2017-07-10T00:00+02:00" randomSeed="280">
+  <bsim:simulationConfiguration id="retailerProcess_sim" processRef="sid-84e84226-d31d-4a97-a17b-c02ece90946f" processInstances="100" startDateTime="2017-07-10T00:00+02:00" randomSeed="280">
     <bsim:startEvent id="sid-04B854FC-4737-4C01-BB39-9875957363E3">
       <bsim:arrivalRate timeUnit="MINUTES">
         <bsim:exponentialDistribution>

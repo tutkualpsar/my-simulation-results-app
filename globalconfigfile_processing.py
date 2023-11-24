@@ -10,6 +10,8 @@ def process_simulation_output(xml_file):
         # Parse the XML content from the string
         root = ET.fromstring(uploaded_xml_file)
 
+        time_unit = root.find(".//configuration/time_unit").text
+
         process_data = []
 
         for process in root.findall(".//process"):
@@ -104,68 +106,17 @@ def process_simulation_output(xml_file):
             resource_type = resource.find("type").text
 
             # Extract cost and time data as floats
-            cost_min = float(resource.find(".//cost/min").text)
-            cost_max = float(resource.find(".//cost/max").text)
-            cost_median = float(resource.find(".//cost/median").text)
-            cost_Q1 = float(resource.find(".//cost/Q1").text)
-            cost_Q3 = float(resource.find(".//cost/Q3").text)
-            cost_avg = float(resource.find(".//cost/avg").text)
-            cost_total = float(resource.find(".//cost/total").text)
-
-            time_in_use_min = float(resource.find(".//time/in_use/min").text)
-            time_in_use_max = float(resource.find(".//time/in_use/max").text)
-            time_in_use_median = float(resource.find(".//time/in_use/median").text)
-            time_in_use_Q1 = float(resource.find(".//time/in_use/Q1").text)
-            time_in_use_Q3 = float(resource.find(".//time/in_use/Q3").text)
-            time_in_use_avg = float(resource.find(".//time/in_use/avg").text)
-            time_in_use_total = float(resource.find(".//time/in_use/total").text)
-
-            time_available_min = float(resource.find(".//time/available/min").text)
-            time_available_max = float(resource.find(".//time/available/max").text)
-            time_available_median = float(resource.find(".//time/available/median").text)
-            time_available_Q1 = float(resource.find(".//time/available/Q1").text)
-            time_available_Q3 = float(resource.find(".//time/available/Q3").text)
-            time_available_avg = float(resource.find(".//time/available/avg").text)
-            time_available_total = float(resource.find(".//time/available/total").text)
-
-            time_workload_min = float(resource.find(".//time/workload/min").text)
-            time_workload_max = float(resource.find(".//time/workload/max").text)
-            time_workload_median = float(resource.find(".//time/workload/median").text)
-            time_workload_Q1 = float(resource.find(".//time/workload/Q1").text)
-            time_workload_Q3 = float(resource.find(".//time/workload/Q3").text)
-            time_workload_avg = float(resource.find(".//time/workload/avg").text)
-            time_workload_total = float(resource.find(".//time/workload/total").text)
+            cost = float(resource.find(".//cost/total").text)
+            time_in_use = float(resource.find(".//time/in_use/total").text)
+            time_available = float(resource.find(".//time/available/total").text)
+            time_workload = float(resource.find(".//time/workload/total").text)
 
             resource_data.append({
                 "Resource Type": resource_type,
-                "Cost Min": cost_min,
-                "Cost Max": cost_max,
-                "Cost Median": cost_median,
-                "Cost Q1": cost_Q1,
-                "Cost Q3": cost_Q3,
-                "Cost Avg": cost_avg,
-                "Cost Total": cost_total,
-                "Time In Use Min": time_in_use_min,
-                "Time In Use Max": time_in_use_max,
-                "Time In Use Median": time_in_use_median,
-                "Time In Use Q1": time_in_use_Q1,
-                "Time In Use Q3": time_in_use_Q3,
-                "Time In Use Avg": time_in_use_avg,
-                "Time In Use Total": time_in_use_total,
-                "Time Available Min": time_available_min,
-                "Time Available Max": time_available_max,
-                "Time Available Median": time_available_median,
-                "Time Available Q1": time_available_Q1,
-                "Time Available Q3": time_available_Q3,
-                "Time Available Avg": time_available_avg,
-                "Time Available Total": time_available_total,
-                "Time Workload Min": time_workload_min,
-                "Time Workload Max": time_workload_max,
-                "Time Workload Median": time_workload_median,
-                "Time Workload Q1": time_workload_Q1,
-                "Time Workload Q3": time_workload_Q3,
-                "Time Workload Avg": time_workload_avg,
-                "Time Workload Total": time_workload_total,
+                "Cost": cost,
+                "Time In Use": time_in_use,
+                "Time Available": time_available,
+                "Time Workload": time_workload,
             })
 
         # Create a DataFrame for resource data
@@ -245,4 +196,106 @@ def process_simulation_output(xml_file):
         # Create a DataFrame for activity data
         activity_df = pd.DataFrame(activity_data)
 
-        return process_df, resource_df, activity_df
+
+# To create dataframe for activity instance:
+        instance_data = []
+        activity_ids = []
+        activity_names = []
+        instance_numbers = []
+        costs = []
+        effective_times = []
+        waiting_times = []
+        resource_idles = []
+
+# Iterate over each "activity" element
+        for activity in root.findall(".//activity"):
+            activity_id = activity.find("id").text
+            activity_name = activity.find("name").text
+
+            # Iterate over each "instance" element
+            for i, instance in enumerate(activity.findall(".//instance")):
+                instance_number = i + 1  # Instance number starts from 1
+                cost = float(instance.find("cost").text)
+                effective_time = float(instance.find(".//effective").text)
+                waiting_time = float(instance.find(".//waiting").text)
+                resource_idle = float(instance.find(".//resources_idle").text)
+
+                # Append data to lists
+                activity_ids.append(activity_id)
+                activity_names.append(activity_name)
+                instance_numbers.append(instance_number)
+                costs.append(cost)
+                effective_times.append(effective_time)
+                waiting_times.append(waiting_time)
+                resource_idles.append(resource_idle)
+
+        # Create the DataFrame
+        instance_data = {
+            'Activity_Id': activity_ids,
+            'Activity_Name': activity_names,
+            'Instance_No': instance_numbers,
+            'Cost': costs,
+            'Effective_Time': effective_times,
+            'Waiting_Time': waiting_times,
+            'Resource_Idle': resource_idles
+        }
+
+        instance_df = pd.DataFrame(instance_data)
+
+
+        # Calculate the total duration
+        instance_df['Total_Duration'] = (
+        instance_df['Effective_Time'] +
+        instance_df['Waiting_Time'] +
+        instance_df['Resource_Idle']
+        )
+
+        # Create a new DataFrame for plotting
+        plot_data = instance_df.groupby(['Instance_No', 'Activity_Name'])['Total_Duration'].sum().unstack()
+
+        # Sort the DataFrame by the total duration of each instance
+        plot_data['Total'] = plot_data.sum(axis=1)
+        plot_data = plot_data.sort_values(by='Total')
+
+        # Drop the 'Total' column as it was only used for sorting
+        plot_data = plot_data.drop('Total', axis=1)
+
+        # Sort instances on the x-axis
+        plot_data = plot_data.sort_index(axis=0)
+
+        # Find instances only under <instances>
+        instances = root.find('.//process/instances')
+
+        # Initialize lists to store data
+        instance_nos = []
+        pi_costs = []
+        pi_durations = []
+        pi_effectives = []
+        pi_waitings = []
+        pi_off_times = []
+
+        # Extract data from instances
+        for idx, instance in enumerate(instances.findall('.//instance')):
+            instance_nos.append(idx + 1)
+            pi_costs.append(float(instance.find('costs').text))
+            time = instance.find('time')
+            pi_durations.append(int(time.find('duration').text))
+            pi_effectives.append(int(time.find('effective').text))
+            pi_waitings.append(int(time.find('waiting').text))
+            pi_off_times.append(int(time.find('offTime').text))
+
+        # Create DataFrame
+        pi_data = {
+            'Instance No': instance_nos,
+            'Cost': pi_costs,
+            'Duration': pi_durations,
+            'Effective': pi_effectives,
+            'Waiting': pi_waitings,
+            'OffTime': pi_off_times
+        }
+
+        process_instances_df = pd.DataFrame(pi_data)
+
+
+
+        return process_df, resource_df, activity_df, instance_df, process_instances_df, plot_data, time_unit
