@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import plost
 import seaborn as sns
 import xml.etree.ElementTree as ET
 import numpy as np
@@ -14,6 +13,8 @@ from resourceinputfile_processing import parce_resource_input
 from matplotlib.ticker import FuncFormatter
 from bpmn_file_processing import resource_responsibility
 from download_function import download_button
+
+pd.set_option('mode.use_inf_as_null', True)
 
 # Call set_page_config as the first Streamlit command
 st.set_page_config(layout='wide', initial_sidebar_state='expanded')
