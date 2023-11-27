@@ -557,6 +557,12 @@ elif sidebar_option == "Detailed Parameters":
 
     # # Plot the waiting time percentage distribution
     waiting_percentage = (process_instances_df['Waiting'] / process_instances_df['Duration']) * 100
+
+    # Replace infinity values with NaN in the waiting percentage column
+    waiting_percentage.replace([np.inf, -np.inf], np.nan, inplace=True)
+
+    # Drop rows with NaN values in the waiting percentage column
+    waiting_percentage.dropna(inplace=True)
     bins = [i for i in range(0, 101, 10)]
     fig_dist_time, ax_dist_time = plt.subplots(figsize=(10, 6))
     sns.histplot(waiting_percentage, bins=bins, kde=False, color='#427D9D')
@@ -564,6 +570,8 @@ elif sidebar_option == "Detailed Parameters":
     ax_dist_time.set_ylabel('Count of Instances')
 
     process_instances_df = process_instances_df.sort_values(by='Cost')
+    process_instances_df['Cost'].replace([np.inf, -np.inf], np.nan, inplace=True)
+    process_instances_df.dropna(subset=['Cost'], inplace=True)
 
     # Plot the instances cost distribution
     bins = [i for i in range(0, int(process_instances_df['Cost'].max()) + 10, 10)]
