@@ -3,5 +3,3 @@ pandas
 plost
 bpmn_python
 seaborn==0.11.2
-conda install -c conda-forge nodejs
-npm install --save bpmn-js
