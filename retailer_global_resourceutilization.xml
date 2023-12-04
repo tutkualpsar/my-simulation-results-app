@@ -2369,13 +2369,13 @@
           <total>88080.0</total>
         </available>
         <workload>
-          <min>1.1111489554950045</min>
-          <max>1.1111489554950045</max>
-          <median>1.1111489554950045</median>
-          <Q1>1.1111489554950045</Q1>
-          <Q3>1.1111489554950045</Q3>
-          <avg>1.1111489554950045</avg>
-          <total>1.1111489554950045</total>
+          <min>0.9811489554950045</min>
+          <max>0.9811489554950045</max>
+          <median>0.9811489554950045</median>
+          <Q1>0.9811489554950045</Q1>
+          <Q3>0.9811489554950045</Q3>
+          <avg>0.9811489554950045</avg>
+          <total>0.9811489554950045</total>
         </workload>
       </time>
       <instances>
@@ -2385,7 +2385,7 @@
           <time>
             <in_use>97870</in_use>
             <available>88080</available>
-            <workload>1.1111489554950045</workload>
+            <workload>0.9811489554950045</workload>
           </time>
         </instance>
       </instances>

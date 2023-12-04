@@ -15,6 +15,7 @@ from bpmn_file_processing import resource_responsibility
 from download_function import download_button
 
 
+
 # Call set_page_config as the first Streamlit command
 st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
@@ -321,10 +322,26 @@ if sidebar_option == "Management Overview":
     col2.markdown('<div class="metric-title">Process Cost</div>', unsafe_allow_html=True)
     col2.markdown(f'<div class="custom-metric">Total: {total_cost_value:.2f}<br>Min: {min_cost_value:.2f} | Max: {max_cost_value:.2f} | Per Instance: {avg_cost_value:.2f}</div>', unsafe_allow_html=True)
 
+    # Calculate days, hours, minutes, and seconds
+    days = avg_time_value // (24 * 3600)
+    hours = (avg_time_value % (24 * 3600)) // 3600
+    minutes = (avg_time_value % 3600) // 60
+    seconds = avg_time_value % 60
+    days_total = total_time_value // (24 * 3600)
+    hours_total = (total_time_value % (24 * 3600)) // 3600
+    minutes_total = (total_time_value % 3600) // 60
+    seconds_total = total_time_value % 60
+
+
     # Metric for Process Cycle Time
     col3.markdown('<div class="metric-title">Process Cycle Time</div>', unsafe_allow_html=True)
-    col3.markdown(f'<div class="custom-metric">{avg_time_value:.2f}<br>Min: {min_time_value:.2f} | Max: {max_time_value:.2f} | Total: {total_time_value:.2f}</div>', unsafe_allow_html=True)
-
+    ##col3.markdown(f'<div class="custom-metric">Average:{avg_time_value:.2f}<br>Min: {min_time_value:.2f} | Max: {max_time_value:.2f} | Total: {total_time_value:.2f}</div>', unsafe_allow_html=True)
+    col3.markdown(f'<div class="custom-metric">Average: {avg_time_value:.2f} seconds<br>'
+              f'( {days:.2f} days, {hours:.2f} hours, {minutes:.2f} minutes, {seconds:.2f} seconds)<br>'
+              f'Min: {min_time_value:.2f} | Max: {max_time_value:.2f} | Total: {total_time_value:.2f} ( {days_total:.2f} days, {hours_total:.2f} hours, {minutes_total:.2f} minutes, {seconds_total:.2f} seconds) </div>',
+              unsafe_allow_html=True)
+              
+ 
     # Additional Metrics
     colc1, colc2, colc3 = st.columns(3)
 
@@ -336,9 +353,13 @@ if sidebar_option == "Management Overview":
     colc2.markdown('<div class="metric-title">Process End Date</div>', unsafe_allow_html=True)
     colc2.markdown(f'<div class="custom-metric">{end_date_str.strftime("%Y-%m-%d")}<br>{end_date_str.strftime("%H:%M:%S%z") if end_date_str else ""}</div>', unsafe_allow_html=True)
 
+    days_sim = time_difference_seconds // (24 * 3600)
+    hours_sim = (time_difference_seconds % (24 * 3600)) // 3600
+    minutes_sim = (time_difference_seconds % 3600) // 60
+    seconds_sim = time_difference_seconds % 60
     # Metric for Process Duration
-    colc3.markdown('<div class="metric-title">Process Duration</div>', unsafe_allow_html=True)
-    colc3.markdown(f'<div class="custom-metric">{time_difference_seconds}</div>', unsafe_allow_html=True)
+    colc3.markdown('<div class="metric-title">Total Simulated Time</div>', unsafe_allow_html=True)
+    colc3.markdown(f'<div class="custom-metric">{time_difference_seconds} ({days_sim:.2f} days, {hours_sim:.2f} hours, {minutes_sim:.2f} minutes, {seconds_sim:.2f} seconds) </div>', unsafe_allow_html=True)
 
     melted_df_res = pd.melt(resource_df, id_vars='Resource Type', var_name='Parameter', value_name='Value')
     cost_df = melted_df_res[melted_df_res['Parameter'].str.contains('Cost')]
@@ -509,21 +530,26 @@ elif sidebar_option == "Detailed Parameters":
 
     with st.expander("ℹ️ Access detailed information on process instances."):
         st.write("""
-         an instance refers to a specific occurrence or execution of a process within the simulated environment. 
-         Each instance represents a unique journey through the defined workflow, capturing the duration, activities, 
-         and associated costs. Below you may find the following tables offering detailed breakdowns and valuable 
+        An instance refers to a specific occurrence or execution of a process within the simulated environment. 
+        Each instance represents a unique journey through the defined workflow, capturing the duration, activities, 
+        and associated costs. Below you may find the following tables offering detailed breakdowns and valuable 
          insights on process instance: 
-        - __Duration of Process Instances:__ Stacked bar chart illustrating the effective, waiting, and off-time 
-        durations of each process instance. Here, you can identify time distribution patterns within instances, 
-        pinpointing areas for optimization in terms of waiting or off-time.
+         - __Duration of Process Instances:__ Bar chart illustrating the total duration of each instance and the percentage of waiting
+        time. Here, you can identify time distribution patterns within instances, pinpointing areas for optimization in terms of waiting 
+        time.
         - __Cost of Process Instances__: Bar chart showcasing the cost associated with each process instance. Here youc can 
         analyze cost variations among instances, enabling to optimize resource allocation and reduce overall expenses.
-        - __Total Duration of Process Instances per Activity__: Bar chart presenting the total duration of process 
+        - __Variation in Waiting Percentages Among Process Instances__: Histogram illustrating distribution of waiting time percentages in the duration of each process instance. This allows 
+        you to understand the waiting time patterns across instances.
+        - __Distribution of Instance Costs__: Histogram illustrating the distribution of costs across instances. 
+        This helps in identifying the frequency of different cost intervals.
+        - __Total Duration of Process Instances per Activity__: Stacked bar chart presenting the total duration of process 
         instances broken down by activity type. Here you can understand which activity types contribute the most to 
         overall instance durations, guiding process improvement efforts.
-        - __Total Cost of Process Instances per Activit__: Bar chart depicting the total cost of process instances 
-        categorized by activity type. Here you can identify cost-intensive activities.
-        """)
+        - __Total Cost of Process Instances per Activit__: Stacked bar chart depicting the total cost of process instances 
+        categorized by activity type. Here you can identify cost-intensive activities.""")
+
+       
 
     # Plot the bar chart for process instance duration
     process_instances_df = process_instances_df.sort_values(by='Instance No')
@@ -582,7 +608,7 @@ elif sidebar_option == "Detailed Parameters":
 
     e1, e2 = st.columns((1,1))
     with e1:
-        st.markdown('### Distribution of Waiting Percentages')
+        st.markdown('### Variation in Waiting Percentages Among Process Instances')
         st.pyplot(fig_dist_time)
     with e2:
         st.markdown('### Distribution of Instance Costs')
@@ -747,7 +773,7 @@ elif sidebar_option == "Detailed Parameters":
     melted_df_res = pd.melt(resource_df, id_vars='Resource Type', var_name='Parameter', value_name='Value')   
     # Bar plot for Time In Use, Time Available, and Workload Perc
     time_data = melted_df_res[melted_df_res['Parameter'].isin(['Time In Use', 'Time Available', 'Time Workload Perc'])]
-    sns.barplot(x='Resource Type', y='Value', hue='Parameter', data=time_data, ax=axes[0], palette={'Time In Use':'#AAE3E2', 'Time Available':'#ACB1D6', 'Time Workload Perc':'#B2A4FF'} )
+    sns.barplot(x='Resource Type', y='Value', hue='Parameter', data=time_data, ax=axes[0], palette={'Time In Use':'#AAE3E2', 'Time Available':'#ACB1D6', 'Time Workload Perc':'#BB2525'} )
     # Set y-axis label for the left (bar) y-axis
     axes[0].set_ylabel('Duration')
     ax2 = axes[0].twinx()
@@ -760,11 +786,19 @@ elif sidebar_option == "Detailed Parameters":
     utilization_table = resource_df[["Resource Type", "Time In Use", "Cost", "Time Workload"]]
     utilization_table.columns = ["Resource Type", "Total Working Time", "Cost", "Utilisation Ratio"]
     merged_df = pd.merge(utilization_table, simulation_input_df, on='Resource Type', suffixes=('_Utilization', '_ResourceInput'))
-    scatter_plot = sns.scatterplot(data=merged_df, x='Utilisation Ratio', y='Cost per Hour', ax=axes[1], size='Cost', hue='Resource Type', sizes=(80, 250), palette={'Worker':'#B2A4FF', 'System': '#AAE3E2', 'Robot':'#1640D6'})
+    scatter_plot = sns.scatterplot(data=merged_df, x='Utilisation Ratio', y='Cost per Hour', ax=axes[1], size='Cost', hue='Resource Type', sizes=(80, 250), palette={'Worker':'#B2A4FF', 'System': '#AAE3E2', 'Robot':'#1640D6'}, legend=False)
     scatter_plot.set(xlabel='Utilization Ratio', ylabel='Cost per Hour')
     axes[1].set_title('Cost Efficiency vs. Utilization Ratio for Different Resource Types')
     axes[1].set_xlabel('Utilization Ratio')
     axes[1].set_ylabel('Cost per Hour')
+    for index, row in merged_df.iterrows():
+        cost_formatted = '{:.2f}'.format(row['Cost'])  # Format cost with two decimal places
+        axes[1].annotate(cost_formatted, (row['Utilisation Ratio'], row['Cost per Hour']), textcoords="offset points", xytext=(5, 0), ha='left')
+
+    unique_resources = merged_df['Resource Type'].unique()
+    handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor={'Worker': '#B2A4FF', 'System': '#AAE3E2', 'Robot': '#1640D6'}.get(resource, 'grey'), markersize=10) for resource in unique_resources]
+    custom_legend = axes[1].legend(handles, unique_resources, title='Resource Type', loc='upper right')
+
 
     st.pyplot(fig)
 
