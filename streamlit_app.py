@@ -539,9 +539,9 @@ elif sidebar_option == "Detailed Parameters":
         time.
         - __Cost of Process Instances__: Bar chart showcasing the cost associated with each process instance. Here youc can 
         analyze cost variations among instances, enabling to optimize resource allocation and reduce overall expenses.
-        - __Variation in Waiting Percentages Among Process Instances__: Histogram illustrating distribution of waiting time percentages in the duration of each process instance. This allows 
+        - __Waiting Percentages Among Process Instances__: Histogram illustrating distribution of waiting time percentages in the duration of each process instance. This allows 
         you to understand the waiting time patterns across instances.
-        - __Distribution of Instance Costs__: Histogram illustrating the distribution of costs across instances. 
+        - __Distribution of Instance Cost__: Histogram illustrating the distribution of costs across instances. 
         This helps in identifying the frequency of different cost intervals.
         - __Total Duration of Process Instances per Activity__: Stacked bar chart presenting the total duration of process 
         instances broken down by activity type. Here you can understand which activity types contribute the most to 
@@ -608,10 +608,10 @@ elif sidebar_option == "Detailed Parameters":
 
     e1, e2 = st.columns((1,1))
     with e1:
-        st.markdown('### Variation in Waiting Percentages Among Process Instances')
+        st.markdown('### Waiting Percentages Among Instances')
         st.pyplot(fig_dist_time)
     with e2:
-        st.markdown('### Distribution of Instance Costs')
+        st.markdown('### Distribution of Instance Cost')
         st.pyplot(fig_dist_cost)
 
 
