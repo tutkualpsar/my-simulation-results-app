@@ -703,6 +703,8 @@ elif sidebar_option == "Detailed Parameters":
     axes[0].set_xlabel('Activity Name')
     axes[0].set_ylabel('Total Cost')
     axes[0].set_title('Total Cost of Each Activity')
+    plt.setp(axes[0].get_xticklabels(), rotation=45, ha='right') 
+   
     # Pointplot for Cost Metrics
     selected_columns = ['Activity Name', 'Cost Min', 'Cost Max', 'Cost Median', 'Cost Q1', 'Cost Q3', 'Cost Avg']
     selected_df = activity_df[selected_columns].copy()
@@ -713,12 +715,14 @@ elif sidebar_option == "Detailed Parameters":
     axes[1].set_title('Pointplot of Costs for Each Activity')
     axes[1].set_xlabel('Activity Name')
     axes[1].set_ylabel('Cost')
+    plt.setp(axes[1].get_xticklabels(), rotation=45, ha='right') 
 
     # Boxplot for Cost Metrics
     sns.boxplot(data=instance_df, x="Activity_Name", y="Cost", ax=axes[2], palette={'Ship order':'#A25772', 'Pack order': '#ffc7c7', 'Prepare order for shipment':'#61A3BA', 'Archive order': '#F5E8C7'})
     axes[2].set_title('Cost Metrics Distribution for Each Activity')
     axes[2].set_ylabel('Cost')
     axes[2].set_xlabel('Activity Name')
+    plt.setp(axes[2].get_xticklabels(), rotation=45, ha='right') 
 
     # Adjust layout
     plt.tight_layout()
